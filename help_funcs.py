@@ -1,12 +1,16 @@
 import json
-instructions = json.loads(open('instructions.json').read())
 from credentials import *
 
-def make_prompt(key=None, model=None, test=False) -> str:
+def make_prompt(key=None, model=None, instructions = None, test=False) -> str:
     '''
-    Take a model name and a key which are used to extract instructions and models answers.
+    Take a model name, a key which are used to extract instructions and models answers from instructions dict (default None).
+    instructions = {str(int) : {'instruction' : str, 'type' : str, \
+        'Model_name' : {'Response' : str ,'Eval': str, 'Comment' : str}, 'Model_Name2' : ... }}
     returns: str prompt to another model.
     '''
+
+    if instructions == None:
+        raise Exception('You should provide a dictionary')
     if key == None:
         raise TypeError('Key is None')
     if model == None:
@@ -24,7 +28,7 @@ def make_prompt(key=None, model=None, test=False) -> str:
 
 
 from requests import post
-def make_open_ai_request(prompt=None, token=OPENAI_API_KEY):
+def make_open_ai_request(prompt=None, token=OPENAI_API_KEY, model='gpt-3.5-turbo'):
     if prompt == None:
         raise Exception('Provide prompt')
     url = 'https://api.openai.com/v1/chat/completions'
@@ -33,17 +37,19 @@ def make_open_ai_request(prompt=None, token=OPENAI_API_KEY):
         "Authorization": f"Bearer {token}"
     }
     body = {
-        'model' : 'gpt-3.5-turbo',
+        'model' : model,
         'messages' : [{'role' : 'user', 'content' : prompt}],
         'temperature' : 0.7
     }
-    return post(url, headers=headers, json=body)
+    obj = post(url, headers=headers, json=body)
+
+    return obj
 
 
-import nltk
+from nltk import word_tokenize
 def get_eval(response:json) -> (str, str):
     response_str = response['choices'][0]['message']['content']
-    tokens = nltk.word_tokenize(response_str)
+    tokens = word_tokenize(response_str)
     evl = tokens[0].lower()
     if evl == 'true':
         res = 'TRUE'
@@ -73,7 +79,7 @@ def make_request_yandex(instruction = None, model='general', tok = IAMTOKEN):
     return post(url=url, headers=headers, json=body)
 
 
-def make_request_gigachat(instruction=None, token=GIGATOK, model='GigaChat:latest'):
+def make_request_gigachat(instruction=None, model='GigaChat:latest', token=GIGATOK):
     if type(instruction) != str:
         raise TypeError('Instruction should be in str format.')
     url = "https://beta.saluteai.sberdevices.ru/v1/chat/completions"

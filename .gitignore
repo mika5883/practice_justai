@@ -3,3 +3,6 @@ __pycache__
 /check_prompts.ipynb
 /get_wrong.ipynb
 /review.txt
+/eval_changes.txt
+original_testset_metrics/credentials.py
+original_testset_metrics/__pychache__

@@ -1,8 +1,8 @@
-/credentials.py
+first_task/credentials.py
 __pycache__
-/check_prompts.ipynb
-/get_wrong.ipynb
-/review.txt
-/eval_changes.txt
+first_task/check_prompts.ipynb
+first_task/get_wrong.ipynb
+first_task/review.txt
+first_task/eval_changes.txt
 original_testset_metrics/credentials.py
 original_testset_metrics/__pychache__
